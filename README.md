@@ -66,8 +66,8 @@ within those genres.
    - Columns: `id`, `name`, `description`
 3. Video Table:
    - Columns: `id`, `title`, `description`, `url`, `genre_id`, `uploaded_by`, `uploaded_at`
-     Genre Types
-     
+
+**Genre Types**
 
 For this project, you can create various genres like:
 
