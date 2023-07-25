@@ -1,5 +1,6 @@
 package com.abc.project1.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -12,8 +13,8 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter(AccessLevel.PRIVATE)
-@Setter(AccessLevel.PRIVATE)
+@Getter
+@Setter
 public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,20 +31,39 @@ public class Video {
     private String videoUrl;
 
     // owning side of mapping
-    @ManyToMany
+    // default fetch type LAZY
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "VideoGenreLink",
-            joinColumns = { @JoinColumn( name = "vid") },
-            inverseJoinColumns = { @JoinColumn( name = "gid" ) }
+            joinColumns = {@JoinColumn(name = "vid")},
+            inverseJoinColumns = {@JoinColumn(name = "gid")}
     )
     private Set<Genre> genres = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User uploadedBy;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Setter(AccessLevel.NONE)
-    @NotBlank
     private Date uploadedAt;
+
+    public Video(String videoTitle, String videoDescription, String videoUrl) {
+        this.videoTitle = videoTitle;
+        this.videoDescription = videoDescription;
+        this.videoUrl = videoUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Video{" +
+                "vid=" + vid +
+                ", videoTitle='" + videoTitle + '\'' +
+                ", videoDescription='" + videoDescription + '\'' +
+                ", videoUrl='" + videoUrl + '\'' +
+                ", genres=" + genres.stream().map(genre -> genre.getGenreName()).toList() +  // prevent implicit toString invocation on Genre entity
+                ", uploadedBy=" + uploadedBy.getUsername() +  // prevent implicit toString invocation on User entity
+                ", uploadedAt=" + uploadedAt +
+                '}';
+    }
 }

@@ -1,37 +1,206 @@
 
-**1. how to remove genre from video genre collection when a genre is removed from db?**
+# Doubts
 
-Difference between @NotNull, @NotEmpty and @NotBlank.
-@NotNull
+1. **how to remove genre from video genre collection when a genre is removed from db?**
+2. 
+
+# References
+1. **stackoverflow error was because of implicit invocation of the `toString()` method in child entity.**
+
+**For ex-** Calling `user.toString()` will implicitly call `video.toString()`, which in turn implicitly call `genre.toString()` and so on. That's why, I got stackoverflow error.
+
+**Solution:**
+[JPA: java.lang.StackOverflowError on adding toString method in entity classes](https://stackoverflow.com/questions/23973347/jpa-java-lang-stackoverflowerror-on-adding-tostring-method-in-entity-classes)
+2. [How toString() is automatically call inside println()](https://stackoverflow.com/questions/36128516/how-tostring-is-automatically-call-inside-println)
+3. First EAGER fetch query is performed then LAZY if requires. proof can be seen in console -> sql query execution order.
+
+
+### Difference between @NotNull, @NotEmpty and @NotBlank.
+
+**@NotNull**
 
 CharSequence, Collection, Map or Array object cannot be null, however can be empty.
 
-@NotEmpty
+**@NotEmpty**
 
 The CharSequence, Collection, Map or Array object cannot be null and not empty (size > 0).
 
-@NotBlank
+**@NotBlank**
 
 The string is not null and the length is greater than zero.
 
-Here are the examples:
+**Here are the examples:**
 
+```java
 String test = null;
 @NotNull: false
 @NotEmpty: false
 @NotBlank: false
+```
 
+```java
 String test = "";
 @NotNull: true
 @NotEmpty: false
 @NotBlank: false
+```
 
+```java
 String test = " ";
 @NotNull: true
 @NotEmpty: true
 @NotBlank: false
+```
 
+```java
 String name = "Some text";
 @NotNull: true
 @NotEmpty: true
 @NotBlank: true
+```
+
+**something**
+
+From the JPA 2.0 spec, the defaults are:
+
+```java
+OneToMany: LAZY
+ManyToOne: EAGER
+ManyToMany: LAZY
+OneToOne: EAGER
+```
+
+And in hibernate, all is Lazy
+
+**UPDATE:**
+The latest version of Hibernate aligns with the above JPA defaults.
+
+# How sql queries are happeing?
+```java
+    User u = ur.findByUid(9);
+    System.out.println(u.toString());
+    System.out.println(u.getVideos());
+```
+above code will trigger following sql queries in continuation.
+## querying user record using userId
+```roomsql
+# Query 1
+select 
+    u1_0.uid,
+    u1_0.created_at,
+    u1_0.email,
+    u1_0.password,
+    u1_0.updated_at,
+    u1_0.username 
+from user u1_0 
+where u1_0.uid=?;
+   
+```
+## querying video record using uploadedByUid foreign key
+```roomsql
+# Query 2
+select 
+    v1_0.uploaded_by_uid,
+    v1_0.vid,
+    v1_0.uploaded_at,
+    v1_0.video_description,
+    v1_0.video_title,
+    v1_0.video_url 
+from video v1_0 
+where v1_0.uploaded_by_uid=?;
+```
+## querying genre record using join table link by joing that link table to genre table(inner join) for a specific Vid
+```roomsql
+# Query 3
+select 
+    g1_0.vid,
+    g1_1.gid,
+    g1_1.genre_description,
+    g1_1.genre_name 
+from video_genre_link g1_0 
+join genre g1_1 
+    on g1_1.gid=g1_0.gid 
+where g1_0.vid=?
+```
+
+because of this code
+
+```java
+User u = ur.findByUid(9);
+Set<Video> videos = u.getVideos();
+
+for (Video v: videos) {
+    System.out.println(v.getGenres());
+}
+```
+
+this sql code is there
+
+```roomsql
+# same as Query 1
+select 
+    u1_0.uid,
+    u1_0.created_at,
+    u1_0.email,
+    u1_0.password,
+    u1_0.updated_at,
+    u1_0.username 
+from user u1_0 
+where u1_0.uid=?;
+
+# same as Query 2
+select 
+    v1_0.uploaded_by_uid,
+    v1_0.vid,
+    v1_0.uploaded_at,
+    v1_0.video_description,
+    v1_0.video_title,
+    v1_0.video_url 
+from video v1_0 
+where v1_0.uploaded_by_uid=?;
+
+# get genre record by inner join with link table with records of specific video(Vid)
+select 
+    g1_0.vid,
+    g1_1.gid,
+    g1_1.genre_description,
+    g1_1.genre_name 
+from video_genre_link g1_0 
+join genre g1_1 
+	on g1_1.gid=g1_0.gid 
+where g1_0.vid=?;
+
+# explain this query????????????????????
+select 
+    v1_0.gid,
+    v1_1.vid,
+    v1_1.uploaded_at,
+    u1_0.uid,
+    u1_0.created_at,
+    u1_0.email,
+    u1_0.password,
+    u1_0.updated_at,
+    u1_0.username,
+    v1_1.video_description,
+    v1_1.video_title,
+    v1_1.video_url 
+from video_genre_link v1_0 
+join video v1_1 
+	on v1_1.vid=v1_0.vid 
+left join user u1_0 
+	on u1_0.uid=v1_1.uploaded_by_uid 
+where v1_0.gid=?;
+
+# same as just above
+select v1_0.gid,v1_1.vid,v1_1.uploaded_at,u1_0.uid,u1_0.created_at,u1_0.email,u1_0.password,u1_0.updated_at,u1_0.username,v1_1.video_description,v1_1.video_title,v1_1.video_url from video_genre_link v1_0 join video v1_1 on v1_1.vid=v1_0.vid left join user u1_0 on u1_0.uid=v1_1.uploaded_by_uid where v1_0.gid=?
+
+#For each video
+[
+    Genre{gid=5, genreName='romance', genreDescription='romance desc', videos=22 videos}, 
+    Genre{gid=6, genreName='action', genreDescription='action desc', videos=22 videos}
+]
+select g1_0.vid,g1_1.gid,g1_1.genre_description,g1_1.genre_name from video_genre_link g1_0 join genre g1_1 on g1_1.gid=g1_0.gid where g1_0.vid=?
+```
+
+**Tools**
+[Visual Database Design with MySQL Workbench](https://www.section.io/engineering-education/visual-database-design-with-mysql-workbench/#:~:text=To%20view%20the%20database%20created,shown%20in%20the%20screenshot%20below.)
