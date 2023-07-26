@@ -1,38 +1,31 @@
 package com.abc.project1.controller;
 
 import com.abc.project1.entity.Video;
+import com.abc.project1.service.VideoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class VideoMetadataController {
-    @PostMapping("/admin/videos")
-    public String uploadNewVideo(@RequestBody Video video){
-        return "upload new video";
-    }
+
+    @Autowired
+    VideoService vs;
 
     @GetMapping("/videos/{videoId}")
-    public String getVideoDetails(){
-        return "get video details";
+    @Transactional
+    public String getVideoDetails(@PathVariable("videoId") int videoId){
+        Video video = vs.getThisVideo(videoId);
+        return video.toString();
     }
 
     @GetMapping("/videos")
+    @Transactional
     public String getAllVideos(){
-        return "get all videos";
-    }
-
-    @GetMapping("/genres/{genreId}/videos")
-    public String getAllVideosOfGenre(){
-        return "get all videos of a genre";
-    }
-
-    @PutMapping("/admin/videos/{videoId}")
-    public String updateVideoDetails(){
-        return "update video details";
-    }
-
-    @DeleteMapping("/admin/videos/{videoId}")
-    public String deleteAVideo(){
-        return "delete a video";
+        List<Video> videos = vs.getAllVideos();
+        return videos.toString();
     }
 }

@@ -97,13 +97,84 @@ public class Project1Application implements CommandLineRunner {
 //		Video v = vr.findByVid(2);
 //		System.out.println(v.getGenres());
 //
-//		Genre g = gr.findByGid(5);
-//		System.out.println(g.getVideos());
+//		Genre g = gr.findByGid(2);
+//		System.out.println(g.toString());
+
+//		System.out.println(gr.findAll());
 
 //		Set<Video> videos = ur.findByUid(9).getVideos();
 ////		System.out.println(videos);
 //		for (Video v: videos) {
 //			System.out.println(v.toString());
 //		}
+
+
+//TODO: insert Testing
+		// save the user
+//		User u = new User("saurabh2002", "dghshdsud78ds7usdgud", "skrajenf32@gmail.com");
+//		ur.save(u);
+
+		// add some generes
+//		Genre g1 = new Genre("Horror", "Darna jaroori hai");
+//		Genre g2 = new Genre("Romance", "Love is life");
+//		Genre g3 = new Genre("Comedy", "Laugh is the best medicin");
+//		Genre g4 = new Genre("Action", "Only fights");
+//
+//		gr.save(g1);
+//		gr.save(g2);
+//		gr.save(g3);
+//		gr.save(g4);
+
+		// user will add the video
+//		Video v1 = new Video("Kisi Ka Bhai Kisi Ki Jaan", "Salman Khan Movie", "www.url.com");
+//		Video v2 = new Video("Conjuring", "Hila dala na", "www.conjuring.com");
+//		// set uploadedBy
+//		v1.setUploadedBy(ur.findByUid(1));
+//		v2.setUploadedBy(ur.findByUid(1));
+//		// set genres
+//		v1.setGenres(new HashSet<>(Arrays.asList(
+//				gr.findByGid(2),
+//				gr.findByGid(3),
+//				gr.findByGid(4)
+//		)));
+//
+//		v2.setGenres(new HashSet<>(Arrays.asList(
+//				gr.findByGid(1),
+//				gr.findByGid(4)
+//		)));
+//
+//		vr.save(v1);
+//		vr.save(v2);
+
+//		// lets check if video is in user's videos & if video is in genres videos list
+//		System.out.println("user videos: "+ur.findByUid(1).getVideos()); // 2 vids expected
+//		System.out.println("horror videos: "+gr.findByGid(1).getVideos());// 1 vid expected
+//		System.out.println("romance videos: "+gr.findByGid(2).getVideos());// 1 vid expected
+//		System.out.println("comedy videos: "+gr.findByGid(3).getVideos());// 1 vid expected
+//		System.out.println("action movies: "+gr.findByGid(4).getVideos());// 2 vids expected
+
+		// everything is working fine
+
+//TODO: delete video testing
+
+// delete video 2: expected, video deleted and removed from user and genre's list
+//		vr.delete(vr.findByVid(2));
+
+//		// check genres videos list
+//		System.out.println("horror videos: "+gr.findByGid(1).getVideos());
+//		System.out.println("action videos: "+gr.findByGid(4).getVideos());
+//
+//		// check users video list
+//		System.out.println("users videos: "+ur.findByUid(1).getVideos());
+
+//todo: working perfectly
+
+//TODO: delete genre testing
+		// delete genre 2: expected, genre deleted and removed from video list
+//		gr.delete(gr.findByGid(2));
+
+//		// check if removed from video genres
+//		System.out.println(vr.findByVid(1).getGenres());
+
 	}
 }

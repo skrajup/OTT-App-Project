@@ -1,8 +1,9 @@
 
 # Doubts
 
-1. **how to remove genre from video genre collection when a genre is removed from db?**
-2. 
+1. how to remove genre from video genre collection when a genre is removed from db?
+2. why I am not able to delete genre and removing link to video implicitly as it is working on video side?
+3. 
 
 # References
 1. **stackoverflow error was because of implicit invocation of the `toString()` method in child entity.**

@@ -1,10 +1,12 @@
 package com.abc.project1.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -32,7 +34,7 @@ public class Video {
 
     // owning side of mapping
     // default fetch type LAZY
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE) // to merge with already created genre while cascading
     @JoinTable(
             name = "VideoGenreLink",
             joinColumns = {@JoinColumn(name = "vid")},
@@ -41,6 +43,7 @@ public class Video {
     private Set<Genre> genres = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
+//    @NotNull  // why its not working?
     private User uploadedBy;
 
     @CreationTimestamp
@@ -61,9 +64,13 @@ public class Video {
                 ", videoTitle='" + videoTitle + '\'' +
                 ", videoDescription='" + videoDescription + '\'' +
                 ", videoUrl='" + videoUrl + '\'' +
-                ", genres=" + genres.stream().map(genre -> genre.getGenreName()).toList() +  // prevent implicit toString invocation on Genre entity
+                ", genres=" + genres.stream().map(Genre::getGenreName).toList() +  // prevent implicit toString invocation on Genre entity
                 ", uploadedBy=" + uploadedBy.getUsername() +  // prevent implicit toString invocation on User entity
                 ", uploadedAt=" + uploadedAt +
                 '}';
+    }
+
+    public void addThisGenre(Genre genre) {
+        genres.add(genre);
     }
 }

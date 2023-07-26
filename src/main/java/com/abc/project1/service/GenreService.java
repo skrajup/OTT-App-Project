@@ -24,22 +24,37 @@ public class GenreService {
         return gr.findAll();
     }
 
-    @Transactional
-    public Genre updateThisGenre(int genreId, Genre details) {
+    public Genre updateThisGenre(int genreId, Genre detailsToUpdate) {
         Genre genreToUpdate = gr.findByGid(genreId);
-//        System.out.println(genreToUpdate.toString());
-//        System.out.println(genreToUpdate.videosGetter());
-//        Set<Video> lis = genreToUpdate.videosGetter();
-//        System.out.println(lis);
-        genreToUpdate.setGenreName(details.getGenreName());
-        genreToUpdate.setGenreDescription(details.getGenreDescription());
+        if(detailsToUpdate.getGenreName() != null && genreToUpdate.getGenreName().length() != 0){
+            genreToUpdate.setGenreName(detailsToUpdate.getGenreName());
+        }
+        if(detailsToUpdate.getGenreDescription() != null && genreToUpdate.getGenreDescription().length() != 0){
+            genreToUpdate.setGenreDescription(detailsToUpdate.getGenreDescription());
+        }
+        gr.save(genreToUpdate); // not necessary, autosave will happen because genreToUpdate didn't detached yet
 
-//        return gr.save(genreToUpdate);
         return genreToUpdate;
     }
 
     public void deleteThisGenre(int genreId) {
         Genre genreToDelete = gr.findByGid(genreId);
+
+        // why direct delete is giving foreign key constraint error?
+        // why not implicit removing of link with video?
+
+        // remove link with video explicitly
+//        List<Video> videos = vs.getAllVideosByGenres(genreToDelete);
+
         gr.delete(genreToDelete);
+    }
+
+    public Genre getByGenreId(int genreId) {
+        return gr.findByGid(genreId);
+    }
+
+    public Set<Video> getVideosByGenreId(int genreId) {
+        Genre genre = gr.findByGid(genreId);
+        return genre.getVideos();
     }
 }
