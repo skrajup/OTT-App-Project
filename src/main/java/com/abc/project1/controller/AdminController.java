@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -26,15 +27,20 @@ public class AdminController {
     @Autowired
     CommonService commonService;
 
+    @Autowired
+    KafkaTemplate<String, Object> kt;
+
     @PostMapping("/genres")
     public ResponseEntity<Map<String, Object>> addNewGenre(@RequestBody Genre genre, HttpServletRequest request){
         Genre savedGenre = gs.addThisGenre(genre);
+        kt.send("genre_updates", "genre notification", savedGenre + " added successfully.");
         return ResponseHandler.generateResponse(savedGenre, HttpStatus.CREATED, "new genre creation success.", request.getRequestURI());
     }
 
     @PostMapping("/videos")
     public ResponseEntity<Map<String, Object>> addNewVideo(@RequestBody Video video, @RequestParam("uploadedById") int uploadedById, @RequestParam("genresIds") Set<Integer> genresIds, HttpServletRequest request){
         Video savedVideo = vs.addThisVideo(video, uploadedById, genresIds);
+        kt.send("video_uploades", "video notification", savedVideo + " uploaded successfully.");
         return ResponseHandler.generateResponse(savedVideo, HttpStatus.CREATED, "new video uploaded success.", request.getRequestURI());
     }
 
@@ -47,12 +53,14 @@ public class AdminController {
     @PutMapping("/genres/{genreId}")
     public ResponseEntity<Map<String, Object>> updateGenre(@RequestBody Genre genreDetailsToUpdate, @PathVariable("genreId") int genreId, HttpServletRequest request){
         Genre updated = gs.updateThisGenre(genreId, genreDetailsToUpdate);
+        kt.send("genre_updates", "genre notification", updated + " updated successfully.");
         return ResponseHandler.generateResponse(updated, HttpStatus.OK, "genre updated with genreId "+genreId+".", request.getRequestURI());
     }
 
     @PutMapping("/videos/{videoId}")
     public ResponseEntity<Map<String, Object>> updateVideo(@RequestBody Video videoDetailsToUpdate, @PathVariable("videoId") int videoId, HttpServletRequest request){
         Video updated = vs.updateThisVideo(videoId, videoDetailsToUpdate);
+        kt.send("video_uploades", "video notification", updated + " updated successfully.");
         return ResponseHandler.generateResponse(updated, HttpStatus.OK, "video updated with videoId "+videoId+".", request.getRequestURI());
     }
 

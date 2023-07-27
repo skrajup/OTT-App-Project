@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,6 +31,9 @@ public class VideoMetadataController {
     @Autowired
     CommentService cs;
 
+    @Autowired
+    KafkaTemplate<String, Object> kt;
+
     @GetMapping("/{videoId}")
     public ResponseEntity<Map<String, Object>> getVideoDetails(@PathVariable("videoId") int videoId, HttpServletRequest request){
         Video video = vs.getThisVideo(videoId);
@@ -45,12 +49,14 @@ public class VideoMetadataController {
     @PostMapping("/{videoId}/like")
     public ResponseEntity<Map<String, Object>> likeVideo(@PathVariable("videoId") int videoId, @RequestBody LikeEntity like, HttpServletRequest request){
         LikeEntity savedLike = ls.likeThisVideo(videoId, like);
+        kt.send("user_likes", "like notification", savedLike + " like added successfully.");
         return ResponseHandler.generateResponse(savedLike, HttpStatus.CREATED, savedLike.getUser().getUsername() + " liked the video with videoId "+like.getVideoId()+".", request.getRequestURI());
     }
 
     @PostMapping("/{videoId}/comment")
     public ResponseEntity<Map<String, Object>> commentOnVideo(@PathVariable("videoId") int videoId, @RequestBody Comment comment, HttpServletRequest request){
         Comment savedComment = cs.commentOnThisVideo(videoId, comment);
+        kt.send("user_comments", "comment notification", savedComment + " comment added successfully.");
         return ResponseHandler.generateResponse(savedComment, HttpStatus.CREATED, savedComment.getUser().getUsername() + " commented on video with videoId "+savedComment.getVideoId()+".", request.getRequestURI());
     }
 
