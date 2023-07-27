@@ -14,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(uniqueConstraints = @UniqueConstraint(name = "uniqueNameForGenre", columnNames = "genreName"))
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

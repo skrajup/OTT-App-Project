@@ -57,4 +57,8 @@ public class GenreService {
         Genre genre = gr.findByGid(genreId);
         return genre.getVideos();
     }
+
+    public Genre getByGenreName(String genreName) {
+        return gr.findByGenreName(genreName);
+    }
 }

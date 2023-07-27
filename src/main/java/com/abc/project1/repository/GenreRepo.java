@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GenreRepo extends JpaRepository<Genre, Integer> {
     Genre findByGid(int genreId);
+
+    Genre findByGenreName(String genreName);
 }

@@ -17,6 +17,10 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uniqueUsernameForUser", columnNames = "username"),
+        @UniqueConstraint(name = "uniqueEmailForUser", columnNames = "email")
+})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

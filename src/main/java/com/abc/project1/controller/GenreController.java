@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/genres")
 public class GenreController {
 
     @Autowired
     GenreService gs;
 
-    @GetMapping("/genres")
+    @GetMapping
     @Transactional
     public String getAllGenres(){
         List<Genre> genreList = gs.findAllGenres();
@@ -25,7 +25,13 @@ public class GenreController {
         // while genreList size is fine here
     }
 
-    @GetMapping("/genres/{genreId}/videos")
+    @GetMapping("/{genreName}")
+    @Transactional
+    public String getGenreByName(@PathVariable("genreName") String genreName){
+        return gs.getByGenreName(genreName).toString();
+    }
+
+    @GetMapping("/{genreId}/videos")
     @Transactional
     public String getVideosByGenre(@PathVariable("genreId") int genreId){
         Set<Video> videos = gs.getVideosByGenreId(genreId);

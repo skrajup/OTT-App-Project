@@ -1,6 +1,7 @@
 package com.abc.project1.service;
 
 import com.abc.project1.entity.Genre;
+import com.abc.project1.entity.LikeEntity;
 import com.abc.project1.entity.User;
 import com.abc.project1.entity.Video;
 import com.abc.project1.repository.VideoRepo;
