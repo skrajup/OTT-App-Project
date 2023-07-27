@@ -17,7 +17,6 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@Table(uniqueConstraints = @UniqueConstraint(name = "uniqueIdForComment", columnNames = {"fk_videoId", "fk_userId"}))
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
