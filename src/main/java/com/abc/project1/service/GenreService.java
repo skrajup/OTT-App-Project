@@ -5,7 +5,6 @@ import com.abc.project1.entity.Video;
 import com.abc.project1.repository.GenreRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -15,6 +14,9 @@ public class GenreService {
 
     @Autowired
     GenreRepo gr;
+
+    @Autowired
+    CommonService commonService;
 
     public Genre addThisGenre(Genre genre) {
         return gr.save(genre);
@@ -38,13 +40,9 @@ public class GenreService {
     }
 
     public void deleteThisGenre(int genreId) {
+        commonService.removeGenreLinkToVideos(genreId);
         Genre genreToDelete = gr.findByGid(genreId);
-
-        // why direct delete is giving foreign key constraint error?
-        // why not implicit removing of link with video?
-
-        // remove link with video explicitly
-//        List<Video> videos = vs.getAllVideosByGenres(genreToDelete);
+        System.out.println(genreToDelete);
 
         gr.delete(genreToDelete);
     }

@@ -46,4 +46,9 @@ public class Genre {
                 ", videos=" + videos.size() + " videos" +
                 '}';
     }
+
+    @JsonIgnore
+    public Set<Video> getVideos() {
+        return videos;
+    }
 }

@@ -52,4 +52,14 @@ public class Comment {
     @Setter(AccessLevel.NONE)
     @JsonIgnore
     private Date updatedAt;
+
+    @JsonIgnore
+    public Video getVideo() {
+        return video;
+    }
+
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
 }

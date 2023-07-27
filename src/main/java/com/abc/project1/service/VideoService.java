@@ -1,12 +1,14 @@
 package com.abc.project1.service;
 
 import com.abc.project1.entity.Genre;
-import com.abc.project1.entity.LikeEntity;
 import com.abc.project1.entity.User;
 import com.abc.project1.entity.Video;
 import com.abc.project1.repository.VideoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,9 +20,11 @@ public class VideoService {
     VideoRepo vr;
     @Autowired
     UserService us;
-
     @Autowired
     GenreService gs;
+    @Autowired
+    ResourceLoader loader;
+
     public Video addThisVideo(Video video, int uploadedById, Set<Integer> genresIds) {
         // set uploadedBy User
         User user = us.getThisByUserId(uploadedById);
@@ -64,4 +68,23 @@ public class VideoService {
         Video video = vr.findByVid(videoId);
         vr.delete(video);
     }
+
+    public void updateGenresOnThisVideo(int videoId, Set<Integer> genresIds) {
+        Video video = vr.findByVid(videoId);
+
+        Set<Genre> genres = new HashSet<>();
+        for (int genreId: genresIds) {
+            Genre genre = gs.getByGenreId(genreId);
+            genres.add(genre);
+        }
+
+        video.setGenres(genres);
+        vr.save(video);
+    }
+
+    public Mono<Resource> readVideo(int videoId){
+        Video video = vr.findByVid(videoId);
+        return Mono.fromSupplier(() -> loader.getResource(video.getVideoUrl()));
+    }
+
 }

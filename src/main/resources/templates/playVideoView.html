@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>playVideoView</title>
+    <style>
+        video {
+            width: 400px;
+        }
+        .video-container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Streaming</h1>
+    <div class="video-container">
+        <video autoplay muted controls>
+            <source th:src="@{'/api/videos/readVideo/' + ${videoId}}" type="video/mp4">
+        </video>
+    </div>
+</body>
+</html>

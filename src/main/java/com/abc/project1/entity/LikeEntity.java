@@ -41,4 +41,14 @@ public class LikeEntity {
     @Setter(AccessLevel.NONE)
     @JsonIgnore
     private Date createdAt;
+
+    @JsonIgnore
+    public Video getVideo() {
+        return video;
+    }
+
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
 }
